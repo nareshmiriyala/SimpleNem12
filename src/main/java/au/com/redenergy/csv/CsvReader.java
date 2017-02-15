@@ -23,6 +23,11 @@ public class CsvReader implements Reader {
         csvFile = file;
     }
 
+    @Override
+    public void setFile(File file) {
+        this.csvFile = file;
+    }
+
     /**
      * Read all lines from csv.
      *
