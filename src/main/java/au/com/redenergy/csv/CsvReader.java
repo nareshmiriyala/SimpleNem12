@@ -17,7 +17,7 @@ import static java.util.Objects.isNull;
  */
 public class CsvReader implements Reader {
     private File csvFile;
-    private Logger logger = LoggerFactory.getLogger(CsvReader.class);
+    private final Logger logger = LoggerFactory.getLogger(CsvReader.class);
 
     public CsvReader() {
     }

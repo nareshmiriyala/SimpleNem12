@@ -20,5 +20,5 @@ public interface Reader {
      * @return
      * @throws SimpleNemParserException
      */
-    public List<String[]> readLines() throws SimpleNemParserException;
+    List<String[]> readLines() throws SimpleNemParserException;
 }

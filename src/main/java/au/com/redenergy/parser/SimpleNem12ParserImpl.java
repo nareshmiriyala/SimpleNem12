@@ -24,8 +24,8 @@ import static java.util.Objects.isNull;
  * Nem12 parser implementation which reads nem12 file and returns the collection of meterreads.
  */
 public class SimpleNem12ParserImpl implements SimpleNem12Parser {
-    private Reader csvReader;
-    private Logger logger = LoggerFactory.getLogger(SimpleNem12Parser.class);
+    private final Reader csvReader;
+    private final Logger logger = LoggerFactory.getLogger(SimpleNem12Parser.class);
 
     public SimpleNem12ParserImpl(Reader csvReader) {
         this.csvReader = csvReader;
@@ -129,7 +129,7 @@ public class SimpleNem12ParserImpl implements SimpleNem12Parser {
 
     private String validateNmi(String nmi) throws SimpleNemParserException {
         if (isNull(nmi)) {
-            throw new SimpleNemParserException("Input NMI " + nmi + " is invalid");
+            throw new SimpleNemParserException("Input NMI is null");
         }
         if (nmi.length() < 10) {
             throw new SimpleNemParserException(format("NMI '%s' length cant be less than 10", nmi));

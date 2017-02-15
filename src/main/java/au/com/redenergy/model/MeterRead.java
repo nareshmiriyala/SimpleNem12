@@ -72,7 +72,7 @@ public class MeterRead {
 
   BigDecimal getTotalVolume() {
     return volumes.values().stream()
-      .map(mr -> mr.getVolume())
+      .map(MeterVolume::getVolume)
       .reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 
