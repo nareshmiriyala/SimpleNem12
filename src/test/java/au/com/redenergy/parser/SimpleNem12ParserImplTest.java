@@ -8,6 +8,9 @@ import au.com.redenergy.model.EnergyUnit;
 import au.com.redenergy.model.MeterRead;
 import au.com.redenergy.model.MeterVolume;
 import au.com.redenergy.model.Quality;
+import au.com.redenergy.validator.EnergyUnitValidator;
+import au.com.redenergy.validator.NmiValidator;
+import au.com.redenergy.validator.QualityValidator;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,7 +34,7 @@ public class SimpleNem12ParserImplTest extends AbstractTest {
 
     @Before
     public void setUp() throws Exception {
-        simpleNem12Parser = new SimpleNem12ParserImpl(new CsvReader());
+        simpleNem12Parser = new SimpleNem12ParserImpl(new CsvReader(),new NmiValidator(),new QualityValidator(),new EnergyUnitValidator());
     }
 
     @Test

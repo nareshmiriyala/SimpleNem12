@@ -6,7 +6,7 @@ import au.com.redenergy.exception.SimpleParserRuntimeException;
 import au.com.redenergy.model.EnergyUnit;
 import au.com.redenergy.model.MeterRead;
 import au.com.redenergy.model.MeterVolume;
-import au.com.redenergy.model.Quality;
+import au.com.redenergy.validator.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 
+import static au.com.redenergy.model.Quality.valueOf;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 
@@ -26,9 +27,15 @@ import static java.util.Objects.isNull;
 public class SimpleNem12ParserImpl implements SimpleNem12Parser {
     private final Reader csvReader;
     private final Logger logger = LoggerFactory.getLogger(SimpleNem12Parser.class);
+    private Validator nmiValidator;
+    private Validator qualityValidator;
+    private Validator energyUnitValidator;
 
-    public SimpleNem12ParserImpl(Reader csvReader) {
+    public SimpleNem12ParserImpl(Reader csvReader, Validator inNmiValidator, Validator inQualityValidator, Validator energyUnitValidator) {
         this.csvReader = csvReader;
+        nmiValidator = inNmiValidator;
+        qualityValidator = inQualityValidator;
+        this.energyUnitValidator = energyUnitValidator;
     }
 
     /**
@@ -140,7 +147,7 @@ public class SimpleNem12ParserImpl implements SimpleNem12Parser {
         if ("300".equals(firstColumn)) {
             //Get the last element from meterreads list and add the meter volume
             MeterRead meterRead = meterReads.get(meterReads.size() - 1);
-            MeterVolume meterVolume = new MeterVolume(BigDecimal.valueOf(Double.parseDouble(recordType[2])), Quality.valueOf(recordType[3]));
+            MeterVolume meterVolume = new MeterVolume(BigDecimal.valueOf(Double.parseDouble(recordType[2])), valueOf(qualityValidator.validate(recordType[3])));
             meterRead.appendVolume(parseDate(recordType[1]), meterVolume);
 
         }
@@ -189,26 +196,9 @@ public class SimpleNem12ParserImpl implements SimpleNem12Parser {
      */
     private MeterRead createMeterRead(String[] record) throws SimpleNemParserException {
         MeterRead meterRead = new MeterRead();
-        meterRead.setNmi(validateNmi(record[1]));
-        meterRead.setEnergyUnit(EnergyUnit.valueOf(record[2]));
+        meterRead.setNmi(nmiValidator.validate(record[1]));
+        meterRead.setEnergyUnit(EnergyUnit.valueOf(energyUnitValidator.validate(record[2])));
         return meterRead;
-    }
-
-    /**
-     * validate the length of NMI .NMI lenght should be 10.
-     *
-     * @param nmi - input nmi
-     * @return
-     * @throws SimpleNemParserException
-     */
-    private String validateNmi(String nmi) throws SimpleNemParserException {
-        if (isNull(nmi)) {
-            throw new SimpleNemParserException("Input NMI is null");
-        }
-        if (nmi.length() != 10) {
-            throw new SimpleNemParserException(format("NMI '%s' length should be 10", nmi));
-        }
-        return nmi;
     }
 
     /**
