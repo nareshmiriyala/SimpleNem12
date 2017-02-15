@@ -40,10 +40,7 @@ public class SimpleNem12ParserImpl implements SimpleNem12Parser {
 
     private Collection<MeterRead> parseAndReadMeterReads(List<String[]> records) throws SimpleNemParserException {
         List<MeterRead> meterReads = new ArrayList<>();
-        Optional<String[]> first = records.stream().findFirst();
-        if(first.isPresent() && !first.get()[0].equals("100")){
-            throw new SimpleNemParserException("RecordType 100 must be the first line in the file");
-        }
+        validateDataIntheCsv(records);
 
         records.forEach(record -> {
             try {
@@ -53,6 +50,28 @@ public class SimpleNem12ParserImpl implements SimpleNem12Parser {
             }
         });
         return meterReads;
+    }
+
+    private void validateDataIntheCsv(List<String[]> records) throws SimpleNemParserException {
+        startingRecordShouldBe100(records);
+        endingRecordShouldBe900(records);
+
+    }
+
+    private void endingRecordShouldBe900(List<String[]> records) throws SimpleNemParserException {
+        Optional<String[]> last = records.stream().reduce((first, second) -> second);
+        compareValues(last, "900");
+    }
+
+    private void startingRecordShouldBe100(List<String[]> records) throws SimpleNemParserException {
+        Optional<String[]> first = records.stream().findFirst();
+        compareValues(first, "100");
+    }
+
+    private void compareValues(Optional<String[]> first, String value) throws SimpleNemParserException {
+        if (first.isPresent() && !value.equals(first.get()[0])) {
+            throw new SimpleNemParserException(String.format("RecordType %s must be the first line in the file", value));
+        }
     }
 
     private void parserLine(String[] record, List<MeterRead> meterReads) throws SimpleNemParserException {
