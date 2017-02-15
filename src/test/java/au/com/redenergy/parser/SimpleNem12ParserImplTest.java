@@ -22,7 +22,10 @@ public class SimpleNem12ParserImplTest extends AbstractTest {
     @Test
     public void shouldReadNem12File() throws Exception {
         assertNotNull(simpleNem12Parser.parseSimpleNem12(getFile()));
-
+    }
+    @Test(expected = SimpleNemParserException.class)
+    public void shouldThrowExceptionWhenNotStartingWith100()throws Exception{
+        simpleNem12Parser.parseSimpleNem12(getFile("Nem12_NotStartingWith100.csv"));
     }
 
     @Test(expected = SimpleNemParserException.class)

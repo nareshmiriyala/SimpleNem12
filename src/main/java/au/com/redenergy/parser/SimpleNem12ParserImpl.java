@@ -2,11 +2,18 @@ package au.com.redenergy.parser;
 
 import au.com.redenergy.csv.Reader;
 import au.com.redenergy.excecption.SimpleNemParserException;
+import au.com.redenergy.model.EnergyUnit;
 import au.com.redenergy.model.MeterRead;
+import au.com.redenergy.model.MeterVolume;
+import au.com.redenergy.model.Quality;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.List;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 import static java.util.Objects.isNull;
 
@@ -15,6 +22,7 @@ import static java.util.Objects.isNull;
  */
 public class SimpleNem12ParserImpl implements SimpleNem12Parser {
     private Reader csvReader;
+    private Logger logger = LoggerFactory.getLogger(SimpleNem12Parser.class);
 
     public SimpleNem12ParserImpl(Reader csvReader) {
         this.csvReader = csvReader;
@@ -27,8 +35,82 @@ public class SimpleNem12ParserImpl implements SimpleNem12Parser {
         csvReader.setFile(simpleNem12File);
         List<String[]> records = csvReader.readLines();
         validateIfNem12FileContainsMeterReads(records);
-        return null;
+        return parseAndReadMeterReads(records);
     }
+
+    private Collection<MeterRead> parseAndReadMeterReads(List<String[]> records) throws SimpleNemParserException {
+        List<MeterRead> meterReads = new ArrayList<>();
+        Optional<String[]> first = records.stream().findFirst();
+        if(first.isPresent() && !first.get()[0].equals("100")){
+            throw new SimpleNemParserException("RecordType 100 must be the first line in the file");
+        }
+
+        records.forEach(record -> {
+            try {
+                parserLine(record, meterReads);
+            } catch (SimpleNemParserException e) {
+                logger.error("Exception thrown when parsing the record {}", record, e);
+            }
+        });
+        return meterReads;
+    }
+
+    private void parserLine(String[] record, List<MeterRead> meterReads) throws SimpleNemParserException {
+        String firstColumn = record[0].trim();
+        //if 100 or 900 as start of line then return
+        if ("100".equals(firstColumn) || "900".equals(firstColumn)) {
+            return;
+        }
+        //RecordType 200 represents the start of a meter read block
+        addMeterReadBlockIfStartsWith200(record, meterReads, firstColumn);
+        //Add MeterVolume to meter reads
+        addMeterVolumeToMeterReadsIfStartWith300(record, meterReads, firstColumn);
+    }
+
+    private void addMeterVolumeToMeterReadsIfStartWith300(String[] recordType, List<MeterRead> meterReads, String firstColumn) {
+        if ("300".equals(firstColumn)) {
+            //Get the last element from meterreads list and add the meter volume
+            MeterRead meterRead = meterReads.get(meterReads.size() - 1);
+            MeterVolume meterVolume = new MeterVolume(new BigDecimal(recordType[2]), Quality.valueOf(recordType[3]));
+            meterRead.appendVolume(parseDate(recordType[1]), meterVolume);
+
+        }
+    }
+
+
+    private void addMeterReadBlockIfStartsWith200(String[] record, List<MeterRead> meterReads, String firstColumn) throws SimpleNemParserException {
+        if ("200".equals(firstColumn)) {
+            MeterRead meterRead = createMeterRead(record);
+            meterReads.add(meterRead);
+        }
+    }
+
+    private LocalDate parseDate(String date) {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        formatter = formatter.withLocale(Locale.ENGLISH);
+        return LocalDate.parse(date, formatter);
+
+
+    }
+
+    private MeterRead createMeterRead(String[] record) throws SimpleNemParserException {
+        MeterRead meterRead = new MeterRead();
+        meterRead.setNmi(validateNmi(record[1]));
+        meterRead.setEnergyUnit(EnergyUnit.valueOf(record[2]));
+        return meterRead;
+    }
+
+    private String validateNmi(String nmi) throws SimpleNemParserException {
+        if (isNull(nmi)) {
+            throw new SimpleNemParserException("Input NMI " + nmi + " is invalid");
+        }
+        if (nmi.length() < 10) {
+            throw new SimpleNemParserException(String.format("NMI '%s' length cant be less than 10", nmi));
+        }
+        return nmi;
+    }
+
 
     private void validateIfNem12FileContainsMeterReads(List<String[]> records) throws SimpleNemParserException {
         if (isNull(records) || records.size() == 0) {
