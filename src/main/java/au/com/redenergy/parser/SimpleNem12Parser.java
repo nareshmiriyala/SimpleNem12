@@ -2,7 +2,7 @@
 
 package au.com.redenergy.parser;
 
-import au.com.redenergy.excecption.SimpleNemParserException;
+import au.com.redenergy.exception.SimpleNemParserException;
 import au.com.redenergy.model.MeterRead;
 
 import java.io.File;

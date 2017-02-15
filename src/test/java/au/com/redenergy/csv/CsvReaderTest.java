@@ -1,7 +1,7 @@
 package au.com.redenergy.csv;
 
 import au.com.redenergy.AbstractTest;
-import au.com.redenergy.excecption.SimpleNemParserException;
+import au.com.redenergy.exception.SimpleNemParserException;
 import org.junit.Before;
 import org.junit.Test;
 

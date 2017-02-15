@@ -1,4 +1,4 @@
-package au.com.redenergy.excecption;
+package au.com.redenergy.exception;
 
 /**
  * Exception thrown when parsing Nem12 file.Its checked exception.

@@ -1,6 +1,6 @@
 package au.com.redenergy.csv;
 
-import au.com.redenergy.excecption.SimpleNemParserException;
+import au.com.redenergy.exception.SimpleNemParserException;
 
 import java.io.File;
 import java.util.List;

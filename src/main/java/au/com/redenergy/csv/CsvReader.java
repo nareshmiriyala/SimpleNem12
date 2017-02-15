@@ -1,7 +1,7 @@
 package au.com.redenergy.csv;
 
 import au.com.bytecode.opencsv.CSVReader;
-import au.com.redenergy.excecption.SimpleNemParserException;
+import au.com.redenergy.exception.SimpleNemParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

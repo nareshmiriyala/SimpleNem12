@@ -2,8 +2,8 @@ package au.com.redenergy.parser;
 
 import au.com.redenergy.AbstractTest;
 import au.com.redenergy.csv.CsvReader;
-import au.com.redenergy.excecption.SimpleNemParserException;
-import au.com.redenergy.excecption.SimpleParserRuntimeException;
+import au.com.redenergy.exception.SimpleNemParserException;
+import au.com.redenergy.exception.SimpleParserRuntimeException;
 import au.com.redenergy.model.EnergyUnit;
 import au.com.redenergy.model.MeterRead;
 import au.com.redenergy.model.MeterVolume;
@@ -94,12 +94,20 @@ public class SimpleNem12ParserImplTest extends AbstractTest {
         simpleNem12Parser.parseSimpleNem12(getFile("emptyNem12.csv"));
     }
 
+    /**
+     * Test for NMI length.NMI length should
+     * @throws Exception
+     */
     @Test(expected = SimpleParserRuntimeException.class)
     public void testForNmiLength() throws Exception {
         simpleNem12Parser.parseSimpleNem12(getFile("Nem12_NmiLengthLessThan10.csv"));
 
     }
 
+    /**
+     * Test for invalid date in the meter volume data.
+     * @throws Exception
+     */
     @Test(expected = SimpleParserRuntimeException.class)
     public void testForInvalidDate() throws Exception {
         simpleNem12Parser.parseSimpleNem12(getFile("Nem12_InvalidDate.csv"));
