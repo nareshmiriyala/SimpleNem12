@@ -3,6 +3,8 @@ package au.com.redenergy.csv;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -14,8 +16,14 @@ public class CsvReaderTest {
 
     @Before
     public void setUp() throws Exception {
-        csvReader = new CsvReader();
+        File file = getFile();
+        csvReader = new CsvReader(file);
 
+    }
+
+    private File getFile() {
+        ClassLoader classLoader = getClass().getClassLoader();
+        return new File(classLoader.getResource("SimpleNem12.csv").getFile());
     }
 
     @Test
