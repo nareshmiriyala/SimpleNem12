@@ -2,6 +2,7 @@ package au.com.redenergy.parser;
 
 import au.com.redenergy.csv.Reader;
 import au.com.redenergy.excecption.SimpleNemParserException;
+import au.com.redenergy.excecption.SimpleParserRuntimeException;
 import au.com.redenergy.model.EnergyUnit;
 import au.com.redenergy.model.MeterRead;
 import au.com.redenergy.model.MeterVolume;
@@ -13,8 +14,10 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
+import static java.lang.String.*;
 import static java.util.Objects.isNull;
 
 /**
@@ -47,6 +50,7 @@ public class SimpleNem12ParserImpl implements SimpleNem12Parser {
                 parserLine(record, meterReads);
             } catch (SimpleNemParserException e) {
                 logger.error("Exception thrown when parsing the record {}", record, e);
+                throw new SimpleParserRuntimeException(e.getMessage());
             }
         });
         return meterReads;
@@ -70,7 +74,7 @@ public class SimpleNem12ParserImpl implements SimpleNem12Parser {
 
     private void compareValues(Optional<String[]> first, String value) throws SimpleNemParserException {
         if (first.isPresent() && !value.equals(first.get()[0])) {
-            throw new SimpleNemParserException(String.format("RecordType %s must be the first line in the file", value));
+            throw new SimpleNemParserException(format("RecordType %s must be the first line in the file", value));
         }
     }
 
@@ -86,7 +90,7 @@ public class SimpleNem12ParserImpl implements SimpleNem12Parser {
         addMeterVolumeToMeterReadsIfStartWith300(record, meterReads, firstColumn);
     }
 
-    private void addMeterVolumeToMeterReadsIfStartWith300(String[] recordType, List<MeterRead> meterReads, String firstColumn) {
+    private void addMeterVolumeToMeterReadsIfStartWith300(String[] recordType, List<MeterRead> meterReads, String firstColumn) throws SimpleNemParserException {
         if ("300".equals(firstColumn)) {
             //Get the last element from meterreads list and add the meter volume
             MeterRead meterRead = meterReads.get(meterReads.size() - 1);
@@ -104,11 +108,14 @@ public class SimpleNem12ParserImpl implements SimpleNem12Parser {
         }
     }
 
-    private LocalDate parseDate(String date) {
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        formatter = formatter.withLocale(Locale.ENGLISH);
-        return LocalDate.parse(date, formatter);
+    private LocalDate parseDate(String date) throws SimpleNemParserException {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+            formatter = formatter.withLocale(Locale.ENGLISH);
+            return LocalDate.parse(date, formatter);
+        } catch (DateTimeParseException e) {
+            throw new SimpleNemParserException(format("Not able to parse date %s", date));
+        }
 
 
     }
@@ -125,7 +132,7 @@ public class SimpleNem12ParserImpl implements SimpleNem12Parser {
             throw new SimpleNemParserException("Input NMI " + nmi + " is invalid");
         }
         if (nmi.length() < 10) {
-            throw new SimpleNemParserException(String.format("NMI '%s' length cant be less than 10", nmi));
+            throw new SimpleNemParserException(format("NMI '%s' length cant be less than 10", nmi));
         }
         return nmi;
     }

@@ -3,6 +3,7 @@ package au.com.redenergy.parser;
 import au.com.redenergy.AbstractTest;
 import au.com.redenergy.csv.CsvReader;
 import au.com.redenergy.excecption.SimpleNemParserException;
+import au.com.redenergy.excecption.SimpleParserRuntimeException;
 import au.com.redenergy.model.EnergyUnit;
 import au.com.redenergy.model.MeterRead;
 import au.com.redenergy.model.MeterVolume;
@@ -91,5 +92,17 @@ public class SimpleNem12ParserImplTest extends AbstractTest {
     @Test(expected = SimpleNemParserException.class)
     public void shouldThrowExceptionWhenNoMeterRecords() throws Exception {
         simpleNem12Parser.parseSimpleNem12(getFile("emptyNem12.csv"));
+    }
+
+    @Test(expected = SimpleParserRuntimeException.class)
+    public void testForNmiLength() throws Exception {
+        simpleNem12Parser.parseSimpleNem12(getFile("Nem12_NmiLengthLessThan10.csv"));
+
+    }
+
+    @Test(expected = SimpleParserRuntimeException.class)
+    public void testForInvalidDate() throws Exception {
+        simpleNem12Parser.parseSimpleNem12(getFile("Nem12_InvalidDate.csv"));
+
     }
 }
