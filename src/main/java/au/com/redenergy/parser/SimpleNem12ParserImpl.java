@@ -25,17 +25,26 @@ import static java.util.Objects.isNull;
  * Nem12 parser implementation which reads nem12 file and returns the collection of meterreads.
  */
 public class SimpleNem12ParserImpl implements SimpleNem12Parser {
-    private final Reader csvReader;
     private final Logger logger = LoggerFactory.getLogger(SimpleNem12Parser.class);
+    private Reader csvReader;
     private Validator nmiValidator;
     private Validator qualityValidator;
     private Validator energyUnitValidator;
 
-    public SimpleNem12ParserImpl(Reader csvReader, Validator inNmiValidator, Validator inQualityValidator, Validator energyUnitValidator) {
+    public void setCsvReader(Reader csvReader) {
         this.csvReader = csvReader;
-        nmiValidator = inNmiValidator;
-        qualityValidator = inQualityValidator;
+    }
+
+    public void setEnergyUnitValidator(Validator energyUnitValidator) {
         this.energyUnitValidator = energyUnitValidator;
+    }
+
+    public void setNmiValidator(Validator nmiValidator) {
+        this.nmiValidator = nmiValidator;
+    }
+
+    public void setQualityValidator(Validator qualityValidator) {
+        this.qualityValidator = qualityValidator;
     }
 
     /**

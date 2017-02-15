@@ -34,7 +34,11 @@ public class SimpleNem12ParserImplTest extends AbstractTest {
 
     @Before
     public void setUp() throws Exception {
-        simpleNem12Parser = new SimpleNem12ParserImpl(new CsvReader(),new NmiValidator(),new QualityValidator(),new EnergyUnitValidator());
+        simpleNem12Parser = SimpleNem12ParserImplBuilder.aSimpleNem12ParserImpl().withCsvReader(new CsvReader())
+                .withNmiValidator(new NmiValidator())
+                .withQualityValidator(new QualityValidator())
+                .withEnergyUnitValidator(new EnergyUnitValidator())
+                .build();
     }
 
     @Test
@@ -99,6 +103,7 @@ public class SimpleNem12ParserImplTest extends AbstractTest {
 
     /**
      * Test for NMI length.NMI length should
+     *
      * @throws Exception
      */
     @Test(expected = SimpleParserRuntimeException.class)
@@ -109,6 +114,7 @@ public class SimpleNem12ParserImplTest extends AbstractTest {
 
     /**
      * Test for invalid date in the meter volume data.
+     *
      * @throws Exception
      */
     @Test(expected = SimpleParserRuntimeException.class)
