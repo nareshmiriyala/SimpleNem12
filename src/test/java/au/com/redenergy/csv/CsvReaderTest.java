@@ -1,5 +1,6 @@
 package au.com.redenergy.csv;
 
+import au.com.redenergy.AbstractTest;
 import au.com.redenergy.excecption.SimpleNemParserException;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,19 +13,14 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Unit test to read from SimpleNem12 CSV File
  */
-public class CsvReaderTest {
+public class CsvReaderTest extends AbstractTest {
     private Reader csvReader;
 
     @Before
     public void setUp() throws Exception {
-        File file = getFile();
-        csvReader = new CsvReader(file);
+        csvReader = new CsvReader();
+        csvReader.setFile(getFile());
 
-    }
-
-    private File getFile() {
-        ClassLoader classLoader = getClass().getClassLoader();
-        return new File(classLoader.getResource("SimpleNem12.csv").getFile());
     }
 
     @Test(expected = SimpleNemParserException.class)

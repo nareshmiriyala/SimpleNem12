@@ -2,6 +2,7 @@
 
 package au.com.redenergy.parser;
 
+import au.com.redenergy.excecption.SimpleNemParserException;
 import au.com.redenergy.model.MeterRead;
 
 import java.io.File;
@@ -15,6 +16,6 @@ public interface SimpleNem12Parser {
    * @param simpleNem12File file in Simple NEM12 format
    * @return Collection of <code>MeterRead</code> that represents the data in the given file.
    */
-  Collection<MeterRead> parseSimpleNem12(File simpleNem12File);
+  Collection<MeterRead> parseSimpleNem12(File simpleNem12File) throws SimpleNemParserException;
 
 }

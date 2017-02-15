@@ -19,9 +19,9 @@ public class CsvReader implements Reader {
     private File csvFile;
     private Logger logger = LoggerFactory.getLogger(CsvReader.class);
 
-    public CsvReader(File file) {
-        csvFile = file;
+    public CsvReader() {
     }
+
 
     @Override
     public void setFile(File file) {
