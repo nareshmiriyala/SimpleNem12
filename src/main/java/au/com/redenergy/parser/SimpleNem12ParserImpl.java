@@ -22,10 +22,23 @@ public class SimpleNem12ParserImpl implements SimpleNem12Parser {
 
     @Override
     public Collection<MeterRead> parseSimpleNem12(File simpleNem12File) throws SimpleNemParserException {
-        if(isNull(csvReader)){
+
+        validateCsvFile();
+        csvReader.setFile(simpleNem12File);
+        List<String[]> records = csvReader.readLines();
+        validateIfNem12FileContainsMeterReads(records);
+        return null;
+    }
+
+    private void validateIfNem12FileContainsMeterReads(List<String[]> records) throws SimpleNemParserException {
+        if (isNull(records) || records.size() == 0) {
+            throw new SimpleNemParserException("SimpleNem12 file doesn't have any meter records");
+        }
+    }
+
+    private void validateCsvFile() throws SimpleNemParserException {
+        if (isNull(csvReader)) {
             throw new SimpleNemParserException("CsvReader can't be null");
         }
-        List<String[]> records = csvReader.readLines();
-        return null;
     }
 }

@@ -2,6 +2,7 @@ package au.com.redenergy.parser;
 
 import au.com.redenergy.AbstractTest;
 import au.com.redenergy.csv.CsvReader;
+import au.com.redenergy.excecption.SimpleNemParserException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,5 +23,10 @@ public class SimpleNem12ParserImplTest extends AbstractTest {
     public void shouldReadNem12File() throws Exception {
         assertNotNull(simpleNem12Parser.parseSimpleNem12(getFile()));
 
+    }
+
+    @Test(expected = SimpleNemParserException.class)
+    public void shouldThrowExceptionWhenNoMeterRecords() throws Exception {
+        simpleNem12Parser.parseSimpleNem12(getFile("emptyNem12.csv"));
     }
 }
