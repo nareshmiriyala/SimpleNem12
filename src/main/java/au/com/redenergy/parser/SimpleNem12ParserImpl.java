@@ -90,7 +90,7 @@ public class SimpleNem12ParserImpl implements SimpleNem12Parser {
         if ("300".equals(firstColumn)) {
             //Get the last element from meterreads list and add the meter volume
             MeterRead meterRead = meterReads.get(meterReads.size() - 1);
-            MeterVolume meterVolume = new MeterVolume(new BigDecimal(recordType[2]), Quality.valueOf(recordType[3]));
+            MeterVolume meterVolume = new MeterVolume(BigDecimal.valueOf(Double.parseDouble(recordType[2])), Quality.valueOf(recordType[3]));
             meterRead.appendVolume(parseDate(recordType[1]), meterVolume);
 
         }
